@@ -1,0 +1,10 @@
+{
+    "wechat": {
+        "appId": "wxec6ae879d20fcc68",
+        "appSecret": "763d49de6aee14239b3eb83b68184df8" 
+    },
+    "daYu": {
+        "appId": "23575355",
+        "appSecret": "842ae6c83fa2a7db37c80e7ec9393866"
+    }
+}
