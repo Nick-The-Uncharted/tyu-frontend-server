@@ -40,60 +40,78 @@ var randomGenerator_1 = require("../tools/randomGenerator");
 var logger = require("../tools/loggers");
 var mysqlExecutor_1 = require("./mysqlExecutor");
 function sendVerificationCode(phoneNumber) {
-    return __awaiter(this, void 0, void 0, function () {
-        var smsCode, client;
-        return __generator(this, function (_a) {
-            smsCode = randomGenerator_1.default();
-            client = new TopClient({
-                'appkey': config.appId,
-                'appsecret': config.appSecret,
-                'REST_URL': 'http://gw.api.taobao.com/router/rest'
-            });
-            client.execute('alibaba.aliqin.fc.sms.num.send', {
-                'extend': '123456',
-                'sms_type': 'normal',
-                'sms_free_sign_name': '黄崇和',
-                'sms_param': { number: smsCode },
-                'rec_num': phoneNumber,
-                'sms_template_code': config.templateId
-            }, function (error, response) {
-                if (!error) {
-                    mysqlExecutor_1.executeQuery("insert into sms value (?, ?, date_add(now(), interval 5 minute))\n                            on duplicate key update smsCode = values(smsCode), \n                            expireTime = values(expireTime)", [phoneNumber, smsCode])
-                        .then(function fulfilled(value) {
-                        logger.info("smscode:" + smsCode + " sent and saved");
-                    })
-                        .catch(function rejected(reason) {
-                        logger.error(reason);
-                    });
-                    return smsCode;
-                }
-                else {
-                    logger.error(error);
-                    throw error;
-                }
-            });
-            return [2 /*return*/];
+    var smsCode = randomGenerator_1.default();
+    var client = new TopClient({
+        'appkey': config.appId,
+        'appsecret': config.appSecret,
+        'REST_URL': 'http://gw.api.taobao.com/router/rest'
+    });
+    return new Promise(function (resolve, reject) {
+        client.execute('alibaba.aliqin.fc.sms.num.send', {
+            'extend': '123456',
+            'sms_type': 'normal',
+            'sms_free_sign_name': config.signatureName,
+            'sms_param': { number: smsCode },
+            'rec_num': phoneNumber,
+            'sms_template_code': config.templateId
+        }, function (error, response) {
+            if (!error) {
+                resolve(smsCode);
+            }
+            else {
+                logger.error(error);
+                reject(error);
+            }
         });
     });
 }
 exports.sendVerificationCode = sendVerificationCode;
+function persistCode(phoneNumber, smsCode) {
+    return __awaiter(this, void 0, void 0, function () {
+        var value, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, mysqlExecutor_1.executeQuery("insert into sms value (?, ?, date_add(now(), interval 5 minute))\n                    on duplicate key update smsCode = values(smsCode), \n                    expireTime = values(expireTime)", [phoneNumber, smsCode])];
+                case 1:
+                    value = _a.sent();
+                    logger.info("smscode:" + smsCode + " sent and saved");
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _a.sent();
+                    logger.error(error_1);
+                    throw error_1;
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.persistCode = persistCode;
 function verifyCode(phoneNumber, smsCode) {
     return __awaiter(this, void 0, void 0, function () {
+        var value, error_2;
         return __generator(this, function (_a) {
-            mysqlExecutor_1.executeQuery("select * from sms where phoneNumber=? and smsCode=? limit 1", [phoneNumber, smsCode])
-                .then(function fulfilled(value) {
-                if (value.length) {
-                    logger.info("smscode:" + smsCode + " sent and saved");
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            })
-                .catch(function rejected(reason) {
-                logger.error(reason);
-            });
-            return [2 /*return*/];
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, mysqlExecutor_1.executeQuery("select * from sms where phoneNumber=? and smsCode=? and expireTime >= now() limit 1", [phoneNumber, smsCode])];
+                case 1:
+                    value = _a.sent();
+                    if (value.length) {
+                        logger.info("smscode:" + smsCode + " is valid");
+                        return [2 /*return*/, true];
+                    }
+                    else {
+                        return [2 /*return*/, false];
+                    }
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_2 = _a.sent();
+                    logger.error(error_2);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
         });
     });
 }

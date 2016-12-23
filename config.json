@@ -6,7 +6,8 @@
     "daYu": {
         "appId": "23575355",
         "appSecret": "842ae6c83fa2a7db37c80e7ec9393866",
-        "templateId": "SMS_35055483"
+        "templateId": "SMS_35055483",
+        "signatureName": "黄崇和"
     },
     "mysql": {
         "host"     : "localhost",

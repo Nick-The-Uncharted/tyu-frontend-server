@@ -6,21 +6,27 @@ import {verifyCode} from '../../tools/verificationCode'
 const config = require('../../config.json')
 const router = express.Router()
 
-const verifyPhoneNumber: RequestHandler = function (req, res, next) {
+const verifyPhoneNumber: RequestHandler = async function (req, res, next) {
     const {phoneNumber, smsCode} = req.body
 
-    verifyCode(phoneNumber, smsCode)
-        .then(function(result) {
-            if (result) {
-                log.info(`smsCode ${smsCode} is valid`);
-                next()
-            } else {
-                log.info('验证码错误')
-                res.status(401).json({
-                    message: '验证码错误'
-                })
-            }        
-        })
+    try {
+        const result = await verifyCode(phoneNumber, smsCode)
+        if (result) {
+            log.info(`smsCode ${smsCode} is valid`);
+            next()
+        } else {
+            log.info('验证码错误')
+            res.status(401).json({
+                message: '验证码错误'
+            })
+        }     
+    } catch (error) {
+        if (error) {
+            res.status(412).json({
+                message: error.message
+            })
+        }
+    }
 }
 
 const bindPhoneNumber: RequestHandler = function (req, res, next){

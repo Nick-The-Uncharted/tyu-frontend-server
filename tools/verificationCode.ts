@@ -4,7 +4,7 @@ import randomGenerator from '../tools/randomGenerator'
 import * as logger from '../tools/loggers'
 import {executeQuery} from './mysqlExecutor'
 
-export async function sendVerificationCode(phoneNumber: string) {
+export function sendVerificationCode(phoneNumber: string) {
     const smsCode = randomGenerator()
     
     var client = new TopClient({
@@ -13,43 +13,47 @@ export async function sendVerificationCode(phoneNumber: string) {
         'REST_URL': 'http://gw.api.taobao.com/router/rest'
     });
  
-    client.execute('alibaba.aliqin.fc.sms.num.send', {
-        'extend': '123456',
-        'sms_type':'normal',
-        'sms_free_sign_name':'黄崇和',
-        'sms_param': {number: smsCode},
-        'rec_num': phoneNumber,
-        'sms_template_code': config.templateId
-    }, function(error, response) {
-        if (!error) {
-            executeQuery(`insert into sms value (?, ?, date_add(now(), interval 5 minute))
-                            on duplicate key update smsCode = values(smsCode), 
-                            expireTime = values(expireTime)`, [phoneNumber, smsCode])
-                            .then(function fulfilled(value) {
-                                logger.info(`smscode:${smsCode} sent and saved`)
-                            })
-                            .catch(function rejected(reason) {
-                                logger.error(reason)
-                            })
-            return smsCode
-        } else {
-            logger.error(error)
-            throw error
-        }
+    return new Promise((resolve, reject) => {
+        client.execute('alibaba.aliqin.fc.sms.num.send', {
+            'extend': '123456',
+            'sms_type':'normal',
+            'sms_free_sign_name': config.signatureName,
+            'sms_param': {number: smsCode},
+            'rec_num': phoneNumber,
+            'sms_template_code': config.templateId
+        }, function(error, response) {
+            if (!error) {
+                resolve(smsCode)
+            } else {
+                logger.error(error)
+                reject(error)
+            }
+        })
     })
 }
 
+export async function persistCode(phoneNumber, smsCode) {
+    try {
+        const value = await executeQuery(`insert into sms value (?, ?, date_add(now(), interval 5 minute))
+                    on duplicate key update smsCode = values(smsCode), 
+                    expireTime = values(expireTime)`, [phoneNumber, smsCode])
+        logger.info(`smscode:${smsCode} sent and saved`)
+    } catch (error) {
+        logger.error(error)
+        throw error
+    }
+}
+
 export async function verifyCode(phoneNumber: string, smsCode: string) {
-    executeQuery(`select * from sms where phoneNumber=? and smsCode=? limit 1`, [phoneNumber, smsCode])
-                            .then(function fulfilled(value) {
-                                if (value.length) {
-                                    logger.info(`smscode:${smsCode} sent and saved`)
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            })
-                            .catch(function rejected(reason) {
-                                logger.error(reason);
-                            })
+    try {
+        const value = await executeQuery(`select * from sms where phoneNumber=? and smsCode=? and expireTime >= now() limit 1`, [phoneNumber, smsCode])
+        if (value.length) {
+            logger.info(`smscode:${smsCode} is valid`)
+            return true;
+        } else {
+            return false;
+        }
+    } catch(error) {
+        logger.error(error);
+    }
 }
