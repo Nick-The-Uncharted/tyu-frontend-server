@@ -5,11 +5,14 @@ var logger = require('morgan');
 var history = require('connect-history-api-fallback');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var proxy = require('http-proxy-middleware');
+var session = require('express-session')
+const config = require('./config.json')
 
 import * as log from './tools/loggers'
 import openidGetter from './tools/openidGetter'
 import serviceRouter from './routes/service';
-
+import helmet = require('helmet')
 var app = express();
 
 // view engine setup
@@ -18,14 +21,32 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(history())
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({secret: "whatever"}))
 
-// 测试用跨越访问
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"], // style-loader
+            scriptSrc: ["'self'", "'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
+        }
+    },
+    dnsPrefetchControl: false,
+    frameguard: true,
+    hidePoweredBy: true,
+    hpkp: false,
+    hsts: true,
+    ieNoOpen: true,
+    noCache: false,
+    noSniff: true,
+    xssFilter: true
+}))
+
+// 测试用跨域访问
 app.use(function(req, res, next) {
     const env = process.env.NODE_ENV || 'development';
     if (env == "development") {
@@ -34,12 +55,12 @@ app.use(function(req, res, next) {
     next()
 })
 
-// 用微信授权码获取openid
+// 获取code, 拿到openId
 app.use("/", function(req, res, next) {
-    log.info(req.body);
+    log.info(req.query.code);
     
-    if (req.body && req.body.wechatAuthCode) {
-        openidGetter(req, res, next, req.body.wechatAuthCode)
+    if (req.query && req.query.code) {
+        openidGetter(req, res, next, req.query.code)
     } else {
         next()
     }
@@ -52,6 +73,17 @@ declare global {
     }
 }
 
+app.use(proxy('/service', {
+    target: config.serverUrl, 
+    changeOrigin: true,
+    pathRewrite: {
+        '^/service': ''
+    }
+}));
+
+
+app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
+app.use(history())
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

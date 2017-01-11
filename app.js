@@ -6,22 +6,43 @@ var logger = require('morgan');
 var history = require('connect-history-api-fallback');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var proxy = require('http-proxy-middleware');
+var session = require('express-session');
+var config = require('./config.json');
 var log = require("./tools/loggers");
 var openidGetter_1 = require("./tools/openidGetter");
 var service_1 = require("./routes/service");
+var helmet = require("helmet");
 var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(history());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-// 测试用跨越访问
+app.use(session({ secret: "whatever" }));
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'", "'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
+        }
+    },
+    dnsPrefetchControl: false,
+    frameguard: true,
+    hidePoweredBy: true,
+    hpkp: false,
+    hsts: true,
+    ieNoOpen: true,
+    noCache: false,
+    noSniff: true,
+    xssFilter: true
+}));
+// 测试用跨域访问
 app.use(function (req, res, next) {
     var env = process.env.NODE_ENV || 'development';
     if (env == "development") {
@@ -29,17 +50,26 @@ app.use(function (req, res, next) {
     }
     next();
 });
-// 用微信授权码获取openid
+// 获取code, 拿到openId
 app.use("/", function (req, res, next) {
-    log.info(req.body);
-    if (req.body && req.body.wechatAuthCode) {
-        openidGetter_1.default(req, res, next, req.body.wechatAuthCode);
+    log.info(req.query.code);
+    if (req.query && req.query.code) {
+        openidGetter_1.default(req, res, next, req.query.code);
     }
     else {
         next();
     }
 });
 app.use('/service', service_1.default);
+app.use(proxy('/service', {
+    target: config.serverUrl,
+    changeOrigin: true,
+    pathRewrite: {
+        '^/service': ''
+    }
+}));
+app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
+app.use(history());
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');

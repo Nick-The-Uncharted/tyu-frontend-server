@@ -51,12 +51,12 @@ router.post('/smsCode', function (req, res, next) {
                     return [4 /*yield*/, verificationCode_1.sendVerificationCode(phoneNumber)];
                 case 2:
                     smsCode = _a.sent();
-                    res.status(204).end();
                     log.info("send sms code to " + phoneNumber);
                     return [4 /*yield*/, verificationCode_1.persistCode(phoneNumber, smsCode)];
                 case 3:
                     _a.sent();
                     log.info("save sms code for " + phoneNumber);
+                    res.status(204).end();
                     return [3 /*break*/, 5];
                 case 4:
                     error_1 = _a.sent();

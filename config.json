@@ -14,5 +14,6 @@
         "user"     : "root",
         "password" : "",
         "database" : "tyu"
-    }
+    },
+    "serverUrl": "https://private-031f53-tyu1.apiary-mock.com"
 }

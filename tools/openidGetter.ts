@@ -8,7 +8,13 @@ export default function getOpenidFromAuthCode(req, res, next, authCode){
             if (!error) {
                 body = JSON.parse(body)
                 
-                req.openid = body.openid
+                const env = process.env.NODE_ENV || 'development';
+                if (env == "development") {
+                    req.session.openid = "xxxxxxx"
+                } else {
+                    req.session.openid = body.openid
+                }
+
                 log.info(`openid is ${req.openid}`);
                 next()
             } else {

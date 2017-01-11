@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var express = require("express");
+var request = require("request");
 var log = require("../../tools/loggers");
 var verificationCode_1 = require("../../tools/verificationCode");
 var config = require('../../config.json');
@@ -84,7 +85,43 @@ var bindPhoneNumber = function (req, res, next) {
         "userId": 6666
     });
 };
+var bindChild = function (req, res, next) {
+    var id = req.body.id;
+    var openId = req.session.openId;
+    request({
+        url: config.serverUrl + "/bindChild",
+        method: 'POST',
+        body: {
+            id: id,
+            openId: openId
+        },
+        json: true
+    }, function (error, response, body) {
+        if (!error) {
+            res.status(response.statusCode).type('json').send(body);
+        }
+        else {
+            next(error);
+        }
+    });
+};
+var getBindedChildren = function (req, res, next) {
+    var openId = req.session.openId;
+    console.log('getBindedChildren');
+    request({
+        url: config.serverUrl + "/user/" + openId + "/childs"
+    }, function (error, response, body) {
+        if (!error) {
+            res.status(response.statusCode).type('json').send(body);
+        }
+        else {
+            next(error);
+        }
+    });
+};
 router.post('/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber);
+router.post('/bindChild', bindChild);
+router.get('/user/childs', getBindedChildren);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = router;
 //# sourceMappingURL=bind.js.map

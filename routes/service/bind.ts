@@ -1,6 +1,7 @@
 import express = require('express')
 import {RequestHandler} from 'express-serve-static-core'
 
+import request = require('request')
 import * as log from '../../tools/loggers'
 import {verifyCode} from '../../tools/verificationCode'
 const config = require('../../config.json')
@@ -39,6 +40,44 @@ const bindPhoneNumber: RequestHandler = function (req, res, next){
     })
 }
 
+const bindChild: RequestHandler = function(req, res, next) {
+    const id = req.body.id
+    const openId = (req as any).session.openId
+
+    request({
+        url: `${config.serverUrl}/bindChild`,
+        method: 'POST',
+        body: {
+            id: id,
+            openId: openId
+        },
+        json: true
+    }, (error, response, body) => {
+        if (!error) {
+            res.status(response.statusCode).type('json').send(body)
+        } else {
+            next(error)
+        }
+    })
+}
+
+const getBindedChildren: RequestHandler = function(req, res, next) {
+    const openId = (req as any).session.openId
+
+    console.log('getBindedChildren')
+    request({
+        url: `${config.serverUrl}/user/${openId}/childs`
+    }, (error, response, body) => {
+        if (!error) {
+            res.status(response.statusCode).type('json').send(body)
+        } else {
+            next(error)
+        }
+    })
+}
+
 router.post('/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber)
+router.post('/bindChild', bindChild)
+router.get('/user/childs', getBindedChildren)
 
 export default router
