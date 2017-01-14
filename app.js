@@ -27,9 +27,9 @@ app.use(session({ secret: "whatever" }));
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
-            defaultSrc: ["'self'"],
+            defaultSrc: ["'self'", "*.weixin.qq.com"],
             styleSrc: ["'self'", "'unsafe-inline'"],
-            scriptSrc: ["'self'", "'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
+            scriptSrc: ["'self'", "*.weixin.qq.com", "'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
         }
     },
     dnsPrefetchControl: false,
@@ -51,12 +51,23 @@ app.use(function (req, res, next) {
     next();
 });
 // 获取code, 拿到openId
-app.use("/", function (req, res, next) {
-    log.info(req.query.code);
+app.use('/', function (req, res, next) {
+    console.log("path: " + req.path + " " + req.path.indexOf('/service'));
+    if (req.path.indexOf('/service') == 0 || req.path.indexOf('/static') == 0) {
+        console.log("not redirect");
+        next();
+        return;
+    }
     if (req.query && req.query.code) {
+        log.info('get openId from code');
         openidGetter_1.default(req, res, next, req.query.code);
     }
+    else if (!req.session["openId"]) {
+        log.info('no openId');
+        openidGetter_1.redirectToGetOpenId(req, res, next);
+    }
     else {
+        log.info("openId is " + req.session["openId"]);
         next();
     }
 });
@@ -68,8 +79,8 @@ app.use(proxy('/service', {
         '^/service': ''
     }
 }));
-app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
 app.use(history());
+app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');

@@ -4,10 +4,10 @@
         "appSecret": "763d49de6aee14239b3eb83b68184df8" 
     },
     "daYu": {
-        "appId": "23575355",
-        "appSecret": "842ae6c83fa2a7db37c80e7ec9393866",
-        "templateId": "SMS_35055483",
-        "signatureName": "黄崇和"
+        "appId": "23303418",
+        "appSecret": "fa86192710c33ad4eaf2f7afaac88e30",
+        "templateId": "SMS_4965151",
+        "signatureName": "体优体育"
     },
     "mysql": {
         "host"     : "localhost",
@@ -15,5 +15,5 @@
         "password" : "",
         "database" : "tyu"
     },
-    "serverUrl": "https://private-031f53-tyu1.apiary-mock.com"
+    "serverUrl": "http://kid.tusport.cn/api/v1"
 }

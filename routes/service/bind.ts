@@ -7,6 +7,8 @@ import {verifyCode} from '../../tools/verificationCode'
 const config = require('../../config.json')
 const router = express.Router()
 
+import {getOpenIdFromReq} from '../../tools/openidGetter'
+
 const verifyPhoneNumber: RequestHandler = async function (req, res, next) {
     const {phoneNumber, smsCode} = req.body
 
@@ -32,41 +34,53 @@ const verifyPhoneNumber: RequestHandler = async function (req, res, next) {
 
 const bindPhoneNumber: RequestHandler = function (req, res, next){
     const {phoneNumber} = req.body
-    const openid = req.openid
-    log.info(`bind openid: ${openid} with phoneNumber: ${phoneNumber}`);
+    const openId = getOpenIdFromReq(req, res)
 
-    res.json({
-        "userId": 6666
+    request({
+        url: `${config.serverUrl}/reportUser/bindPhoneNumber`,
+        method: 'POST',
+    }, (error, response, body) => {
+        log.info({
+            openId: openId,
+            phoneNumber: phoneNumber
+        })
+        log.info(body)
+        if (!error) {
+            res.status(response.statusCode).type('json').send(body)
+            log.info(`bind openid: ${openId} with phoneNumber: ${phoneNumber}`);
+        } else {
+            next(error)
+        }
+    }).form({
+        openId: openId,
+        phoneNumber: phoneNumber
     })
 }
 
 const bindChild: RequestHandler = function(req, res, next) {
-    const id = req.body.id
-    const openId = (req as any).session.openId
+    const studentID = req.body.studentID
+    const openId = getOpenIdFromReq(req, res)
 
     request({
-        url: `${config.serverUrl}/bindChild`,
-        method: 'POST',
-        body: {
-            id: id,
-            openId: openId
-        },
-        json: true
+        url: `${config.serverUrl}/reportUser/bindStudent`,
+        method: 'POST'
     }, (error, response, body) => {
         if (!error) {
             res.status(response.statusCode).type('json').send(body)
         } else {
             next(error)
         }
+    }).form({
+        studentID: studentID,
+        openID: openId
     })
 }
 
 const getBindedChildren: RequestHandler = function(req, res, next) {
-    const openId = (req as any).session.openId
+    const openId = getOpenIdFromReq(req, res)
 
-    console.log('getBindedChildren')
     request({
-        url: `${config.serverUrl}/user/${openId}/childs`
+        url: `${config.serverUrl}/reportUser/searchStudentByOpenID?openID=${openId}`,
     }, (error, response, body) => {
         if (!error) {
             res.status(response.statusCode).type('json').send(body)
@@ -76,8 +90,8 @@ const getBindedChildren: RequestHandler = function(req, res, next) {
     })
 }
 
-router.post('/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber)
-router.post('/bindChild', bindChild)
-router.get('/user/childs', getBindedChildren)
+router.post('/reportUser/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber)
+router.post('/reportUser/bindStudent', bindChild)
+router.get('/reportUser/searchStudentByOpenID', getBindedChildren)
 
 export default router

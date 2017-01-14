@@ -40,6 +40,7 @@ var log = require("../../tools/loggers");
 var verificationCode_1 = require("../../tools/verificationCode");
 var config = require('../../config.json');
 var router = express.Router();
+var openidGetter_1 = require("../../tools/openidGetter");
 var verifyPhoneNumber = function (req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
         var _a, phoneNumber, smsCode, result, error_1;
@@ -79,23 +80,34 @@ var verifyPhoneNumber = function (req, res, next) {
 };
 var bindPhoneNumber = function (req, res, next) {
     var phoneNumber = req.body.phoneNumber;
-    var openid = req.openid;
-    log.info("bind openid: " + openid + " with phoneNumber: " + phoneNumber);
-    res.json({
-        "userId": 6666
+    var openId = openidGetter_1.getOpenIdFromReq(req, res);
+    request({
+        url: config.serverUrl + "/reportUser/bindPhoneNumber",
+        method: 'POST',
+    }, function (error, response, body) {
+        log.info({
+            openId: openId,
+            phoneNumber: phoneNumber
+        });
+        log.info(body);
+        if (!error) {
+            res.status(response.statusCode).type('json').send(body);
+            log.info("bind openid: " + openId + " with phoneNumber: " + phoneNumber);
+        }
+        else {
+            next(error);
+        }
+    }).form({
+        openId: openId,
+        phoneNumber: phoneNumber
     });
 };
 var bindChild = function (req, res, next) {
-    var id = req.body.id;
-    var openId = req.session.openId;
+    var studentID = req.body.studentID;
+    var openId = openidGetter_1.getOpenIdFromReq(req, res);
     request({
-        url: config.serverUrl + "/bindChild",
-        method: 'POST',
-        body: {
-            id: id,
-            openId: openId
-        },
-        json: true
+        url: config.serverUrl + "/reportUser/bindStudent",
+        method: 'POST'
     }, function (error, response, body) {
         if (!error) {
             res.status(response.statusCode).type('json').send(body);
@@ -103,13 +115,15 @@ var bindChild = function (req, res, next) {
         else {
             next(error);
         }
+    }).form({
+        studentID: studentID,
+        openID: openId
     });
 };
 var getBindedChildren = function (req, res, next) {
-    var openId = req.session.openId;
-    console.log('getBindedChildren');
+    var openId = openidGetter_1.getOpenIdFromReq(req, res);
     request({
-        url: config.serverUrl + "/user/" + openId + "/childs"
+        url: config.serverUrl + "/reportUser/searchStudentByOpenID?openID=" + openId,
     }, function (error, response, body) {
         if (!error) {
             res.status(response.statusCode).type('json').send(body);
@@ -119,9 +133,9 @@ var getBindedChildren = function (req, res, next) {
         }
     });
 };
-router.post('/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber);
-router.post('/bindChild', bindChild);
-router.get('/user/childs', getBindedChildren);
+router.post('/reportUser/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber);
+router.post('/reportUser/bindStudent', bindChild);
+router.get('/reportUser/searchStudentByOpenID', getBindedChildren);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = router;
 //# sourceMappingURL=bind.js.map

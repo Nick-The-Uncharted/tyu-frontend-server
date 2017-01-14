@@ -51,7 +51,7 @@ function sendVerificationCode(phoneNumber) {
             'extend': '123456',
             'sms_type': 'normal',
             'sms_free_sign_name': config.signatureName,
-            'sms_param': { number: smsCode },
+            'sms_param': { code: smsCode, product: "体优体育" },
             'rec_num': phoneNumber,
             'sms_template_code': config.templateId
         }, function (error, response) {

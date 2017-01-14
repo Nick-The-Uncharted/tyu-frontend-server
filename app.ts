@@ -10,7 +10,7 @@ var session = require('express-session')
 const config = require('./config.json')
 
 import * as log from './tools/loggers'
-import openidGetter from './tools/openidGetter'
+import openidGetter, {redirectToGetOpenId} from './tools/openidGetter'
 import serviceRouter from './routes/service';
 import helmet = require('helmet')
 var app = express();
@@ -30,9 +30,9 @@ app.use(session({secret: "whatever"}))
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
-            defaultSrc: ["'self'"],
+            defaultSrc: ["'self'", "*.weixin.qq.com"],
             styleSrc: ["'self'", "'unsafe-inline'"], // style-loader
-            scriptSrc: ["'self'", "'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
+            scriptSrc: ["'self'", "*.weixin.qq.com" ,"'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
         }
     },
     dnsPrefetchControl: false,
@@ -56,12 +56,21 @@ app.use(function(req, res, next) {
 })
 
 // 获取code, 拿到openId
-app.use("/", function(req, res, next) {
-    log.info(req.query.code);
-    
+app.use('/', function(req, res, next) {
+    console.log(`path: ${req.path} ${req.path.indexOf('/service')}`)
+    if (req.path.indexOf('/service') == 0 || req.path.indexOf('/static') == 0) {
+        console.log(`not redirect`)
+        next()
+        return
+    }
     if (req.query && req.query.code) {
+        log.info('get openId from code')
         openidGetter(req, res, next, req.query.code)
+    } else if (!req.session["openId"]) {
+        log.info('no openId')
+        redirectToGetOpenId(req, res, next)
     } else {
+        log.info(`openId is ${req.session["openId"]}`)
         next()
     }
 })
@@ -81,9 +90,8 @@ app.use(proxy('/service', {
     }
 }));
 
-
-app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
 app.use(history())
+app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
