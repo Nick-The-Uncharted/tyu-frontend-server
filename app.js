@@ -25,13 +25,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({ secret: "whatever" }));
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'", "*.weixin.qq.com"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            scriptSrc: ["'self'", "*.weixin.qq.com", "'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
-        }
-    },
+    contentSecurityPolicy: false,
+    // {
+    //     directives: {
+    //         defaultSrc: ["'self'", "*.weixin.qq.com"],
+    //         styleSrc: ["'self'", "'unsafe-inline'"], // style-loader
+    //         scriptSrc: ["'self'", "*.weixin.qq.com" ,"'unsafe-eval'"] // 使用的vue standalone version， 没有用vue-loader
+    //     }
+    // },
     dnsPrefetchControl: false,
     frameguard: true,
     hidePoweredBy: true,
