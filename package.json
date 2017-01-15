@@ -23,7 +23,7 @@
     "request": "^2.79.0",
     "serve-favicon": "~2.3.0",
     "strongloop": "^6.0.3",
-    "tyu-wechat": "git+https://github.com/Nick-The-Uncharted/tyu-wechat.git",
+    "tyu-wechat": "Nick-The-Uncharted/tyu-wechat",
     "urllib": "^2.19.0"
   },
   "devDependencies": {
