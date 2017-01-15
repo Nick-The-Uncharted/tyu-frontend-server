@@ -10,10 +10,10 @@
         "signatureName": "体优体育"
     },
     "mysql": {
-        "host"     : "localhost",
-        "user"     : "root",
-        "password" : "",
-        "database" : "tyu"
+        "host"     : "rdsbzk43kfuicf9g41p6private.mysql.rds.aliyuncs.com",
+        "user"     : "tuwlzx",
+        "password" : "JTJ123450",
+        "database" : "tukid"
     },
     "serverUrl": "http://kid.tusport.cn/api/v1"
 }
