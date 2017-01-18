@@ -17,7 +17,7 @@ function getOpenidFromAuthCode(req, res, next, authCode) {
             log.info("openId: " + body);
             body = JSON.parse(body);
             var env = process.env.NODE_ENV || 'development';
-            req.session.openid = body.openid;
+            req.session.openid = body.openId;
             log.info("openid is " + req.session.openid);
             next();
         }
