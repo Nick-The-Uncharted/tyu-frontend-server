@@ -3,7 +3,7 @@ var mysql = require("mysql");
 var mysqlConfig = require('../config.json').mysql;
 var logger = require("../tools/loggers");
 (function () {
-    executeQuery("create table if not exists tyu.sms (\n\t    phoneNumber char(11)  primary key,\n\t    smsCode char(4),\n\t    expireTime DATETIME)");
+    executeQuery("create table if not exists sms (\n\t    phoneNumber char(11)  primary key,\n\t    smsCode char(4),\n\t    expireTime DATETIME)");
 })();
 function executeQuery(query, values) {
     if (values === void 0) { values = []; }
