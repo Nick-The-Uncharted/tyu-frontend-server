@@ -10,7 +10,7 @@
         "signatureName": "体优体育"
     },
     "mysql": {
-        "host"     : "rdsbzk43kfuicf9g41p6private.mysql.rds.aliyuncs.com",
+        "host"     : "rdsbzk43kfuicf9g41p6.mysql.rds.aliyuncs.com",
         "user"     : "tuwlzx",
         "password" : "JTJ123450",
         "database" : "tukid"

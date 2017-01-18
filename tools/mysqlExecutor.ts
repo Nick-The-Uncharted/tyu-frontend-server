@@ -4,7 +4,7 @@ import * as logger from '../tools/loggers'
 
 (function() {
     executeQuery(
-    `create table if not exists tyu.sms (
+    `create table if not exists sms (
 	    phoneNumber char(11)  primary key,
 	    smsCode char(4),
 	    expireTime DATETIME)`
