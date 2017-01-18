@@ -80,31 +80,31 @@ var verifyPhoneNumber = function (req, res, next) {
 };
 var bindPhoneNumber = function (req, res, next) {
     var phoneNumber = req.body.phoneNumber;
-    var openId = openidGetter_1.getOpenIdFromReq(req, res);
+    var openid = openidGetter_1.getOpenIdFromReq(req, res);
     request({
         url: config.serverUrl + "/reportUser/bindPhoneNumber",
         method: 'POST',
     }, function (error, response, body) {
         log.info({
-            openId: openId,
+            openid: openid,
             phoneNumber: phoneNumber
         });
         log.info(body);
         if (!error) {
             res.status(response.statusCode).type('json').send(body);
-            log.info("bind openid: " + openId + " with phoneNumber: " + phoneNumber);
+            log.info("bind openid: " + openid + " with phoneNumber: " + phoneNumber);
         }
         else {
             next(error);
         }
     }).form({
-        openId: openId,
+        openID: openid,
         phoneNumber: phoneNumber
     });
 };
 var bindChild = function (req, res, next) {
     var studentID = req.body.studentID;
-    var openId = openidGetter_1.getOpenIdFromReq(req, res);
+    var openid = openidGetter_1.getOpenIdFromReq(req, res);
     request({
         url: config.serverUrl + "/reportUser/bindStudent",
         method: 'POST'
@@ -117,13 +117,13 @@ var bindChild = function (req, res, next) {
         }
     }).form({
         studentID: studentID,
-        openID: openId
+        openID: openid
     });
 };
 var getBindedChildren = function (req, res, next) {
-    var openId = openidGetter_1.getOpenIdFromReq(req, res);
+    var openid = openidGetter_1.getOpenIdFromReq(req, res);
     request({
-        url: config.serverUrl + "/reportUser/searchStudentByOpenID?openID=" + openId,
+        url: config.serverUrl + "/reportUser/searchStudentByOpenID?openID=" + openid,
     }, function (error, response, body) {
         if (!error) {
             res.status(response.statusCode).type('json').send(body);

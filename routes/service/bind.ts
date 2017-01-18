@@ -34,32 +34,32 @@ const verifyPhoneNumber: RequestHandler = async function (req, res, next) {
 
 const bindPhoneNumber: RequestHandler = function (req, res, next){
     const {phoneNumber} = req.body
-    const openId = getOpenIdFromReq(req, res)
+    const openid = getOpenIdFromReq(req, res)
 
     request({
         url: `${config.serverUrl}/reportUser/bindPhoneNumber`,
         method: 'POST',
     }, (error, response, body) => {
         log.info({
-            openId: openId,
+            openid: openid,
             phoneNumber: phoneNumber
         })
         log.info(body)
         if (!error) {
             res.status(response.statusCode).type('json').send(body)
-            log.info(`bind openid: ${openId} with phoneNumber: ${phoneNumber}`);
+            log.info(`bind openid: ${openid} with phoneNumber: ${phoneNumber}`);
         } else {
             next(error)
         }
     }).form({
-        openId: openId,
+        openID: openid,
         phoneNumber: phoneNumber
     })
 }
 
 const bindChild: RequestHandler = function(req, res, next) {
     const studentID = req.body.studentID
-    const openId = getOpenIdFromReq(req, res)
+    const openid = getOpenIdFromReq(req, res)
 
     request({
         url: `${config.serverUrl}/reportUser/bindStudent`,
@@ -72,15 +72,15 @@ const bindChild: RequestHandler = function(req, res, next) {
         }
     }).form({
         studentID: studentID,
-        openID: openId
+        openID: openid
     })
 }
 
 const getBindedChildren: RequestHandler = function(req, res, next) {
-    const openId = getOpenIdFromReq(req, res)
+    const openid = getOpenIdFromReq(req, res)
 
     request({
-        url: `${config.serverUrl}/reportUser/searchStudentByOpenID?openID=${openId}`,
+        url: `${config.serverUrl}/reportUser/searchStudentByOpenID?openID=${openid}`,
     }, (error, response, body) => {
         if (!error) {
             res.status(response.statusCode).type('json').send(body)

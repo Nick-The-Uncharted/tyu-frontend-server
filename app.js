@@ -51,7 +51,7 @@ app.use(function (req, res, next) {
     }
     next();
 });
-// 获取code, 拿到openId
+// 获取code, 拿到openid
 app.use('/', function (req, res, next) {
     console.log("path: " + req.path + " " + req.path.indexOf('/service'));
     if (req.path.indexOf('/service') == 0 || req.path.indexOf('/static') == 0) {
@@ -60,15 +60,15 @@ app.use('/', function (req, res, next) {
         return;
     }
     if (req.query && req.query.code) {
-        log.info('get openId from code');
+        log.info('get openid from code');
         openidGetter_1.default(req, res, next, req.query.code);
     }
-    else if (!req.session["openId"]) {
-        log.info('no openId');
+    else if (!req.session["openid"]) {
+        log.info('no openid');
         openidGetter_1.redirectToGetOpenId(req, res, next);
     }
     else {
-        log.info("openId is " + req.session["openId"]);
+        log.info("openid is " + req.session["openid"]);
         next();
     }
 });
