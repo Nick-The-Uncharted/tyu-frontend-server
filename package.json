@@ -22,7 +22,7 @@
     "pug": "~2.0.0-beta6",
     "request": "^2.79.0",
     "serve-favicon": "~2.3.0",
-    "tyu-wechat": "Nick-The-Uncharted/tyu-wechat",
+    "tyu-wechat": "git+ssh://git@github.com/Nick-The-Uncharted/tyu-wechat.git",
     "urllib": "^2.19.0"
   },
   "devDependencies": {
