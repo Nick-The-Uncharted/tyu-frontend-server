@@ -56,6 +56,8 @@ app.use(function(req, res, next) {
     next()
 })
 
+app.use(express.static(path.join(__dirname, 'static')));
+
 // 获取code, 拿到openid
 app.use('/', function(req, res, next) {
     console.log(`path: ${req.path} ${req.path.indexOf('/service')}`)
