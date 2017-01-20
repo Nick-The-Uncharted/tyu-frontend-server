@@ -7,7 +7,7 @@
         "appId": "23303418",
         "appSecret": "fa86192710c33ad4eaf2f7afaac88e30",
         "templateId": "SMS_4965151",
-        "signatureName": "体优体育"
+        "signatureName": "体亦优"
     },
     "mysql": {
         "host"     : "rdsbzk43kfuicf9g41p6.mysql.rds.aliyuncs.com",
