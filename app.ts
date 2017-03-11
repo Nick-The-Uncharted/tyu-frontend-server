@@ -93,6 +93,7 @@ app.use(proxy('/service', {
     }
 }));
 
+// history中间件会把所有get请求rewrite来支持单页应用， 放在这防止rewrite json接口
 app.use(history())
 app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
 // catch 404 and forward to error handler
