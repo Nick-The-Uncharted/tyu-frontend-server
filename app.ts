@@ -77,7 +77,7 @@ app.use('/', function(req, res, next) {
 })
 
 app.use(express.static(path.join(__dirname, 'static')));
-// app.use('/service', serviceRouter);
+app.use('/service', serviceRouter);
 
 declare global {
     interface Error {
