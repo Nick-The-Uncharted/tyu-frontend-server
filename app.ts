@@ -77,7 +77,7 @@ app.use('/', function(req, res, next) {
 })
 
 app.use(express.static(path.join(__dirname, 'static')));
-app.use('/service', serviceRouter);
+// app.use('/service', serviceRouter);
 
 declare global {
     interface Error {
@@ -88,8 +88,10 @@ declare global {
 app.use(proxy('/service', {
     target: config.serverUrl, 
     changeOrigin: true,
-    pathRewrite: {
-        '^/service': ''
+    pathRewrite: function(path: string, req){
+        if (path.indexOf('/serivce') == 0) {
+            return `${path.substr(8)}&openID=${req.session["openid"]}`
+        }
     },
     onProxyReq: (proxyReq, req, res) => {
         if (req.method == "POST") {
@@ -113,7 +115,6 @@ app.use(proxy('/service', {
             // Write out body changes to the proxyReq stream
             proxyReq.write( bodyContent );
             proxyReq.end();
-            console.log('wtf')
         }
     }
 }));

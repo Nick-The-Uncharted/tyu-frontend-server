@@ -11,7 +11,6 @@ var session = require('express-session');
 var config = require('./config.json');
 var log = require("./tools/loggers");
 var openidGetter_1 = require("./tools/openidGetter");
-var service_1 = require("./routes/service");
 var helmet = require("helmet");
 var app = express();
 // view engine setup
@@ -73,12 +72,13 @@ app.use('/', function (req, res, next) {
     }
 });
 app.use(express.static(path.join(__dirname, 'static')));
-app.use('/service', service_1.default);
 app.use(proxy('/service', {
     target: config.serverUrl,
     changeOrigin: true,
-    pathRewrite: {
-        '^/service': ''
+    pathRewrite: function (path, req) {
+        if (path.indexOf('/serivce') == 0) {
+            return path.substr(8) + "&openID=" + req.session["openid"];
+        }
     },
     onProxyReq: function (proxyReq, req, res) {
         if (req.method == "POST") {
@@ -97,7 +97,6 @@ app.use(proxy('/service', {
             // Write out body changes to the proxyReq stream
             proxyReq.write(bodyContent);
             proxyReq.end();
-            console.log('wtf');
         }
     }
 }));

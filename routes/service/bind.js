@@ -133,8 +133,8 @@ var getBindedChildren = function (req, res, next) {
         }
     });
 };
-// router.post('/reportUser/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber)
-// router.post('/reportUser/bindStudent', bindChild)
+router.post('/reportUser/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber);
+router.post('/reportUser/bindStudent', bindChild);
 router.get('/reportUser/searchStudentByOpenID', getBindedChildren);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = router;

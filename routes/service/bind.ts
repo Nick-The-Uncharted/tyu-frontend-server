@@ -90,8 +90,8 @@ const getBindedChildren: RequestHandler = function(req, res, next) {
     })
 }
 
-// router.post('/reportUser/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber)
-// router.post('/reportUser/bindStudent', bindChild)
+router.post('/reportUser/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber)
+router.post('/reportUser/bindStudent', bindChild)
 router.get('/reportUser/searchStudentByOpenID', getBindedChildren)
 
 export default router
