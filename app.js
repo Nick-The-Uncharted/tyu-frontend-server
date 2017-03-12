@@ -76,8 +76,15 @@ app.use(proxy('/service', {
     target: config.serverUrl,
     changeOrigin: true,
     pathRewrite: function (path, req) {
-        if (path.indexOf('/serivce') == 0) {
-            return path.substr(8) + "&openID=" + req.session["openid"];
+        if (path.indexOf('/service') == 0) {
+            console.log('path is ' + path);
+            if (path.indexOf('?') >= 0) {
+                return path.substr(8) + "&openID=" + req.session["openid"];
+            }
+            else {
+                console.log('rewrite to' + (path.substr(8) + "?openID=" + req.session["openid"]));
+                return path.substr(8) + "?openID=" + req.session["openid"];
+            }
         }
     },
     onProxyReq: function (proxyReq, req, res) {
