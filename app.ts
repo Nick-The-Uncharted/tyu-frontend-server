@@ -56,8 +56,6 @@ app.use(function(req, res, next) {
     next()
 })
 
-app.use(express.static(path.join(__dirname, 'static')));
-
 // 获取code, 拿到openid
 app.use('/', function(req, res, next) {
     console.log(`path: ${req.path} ${req.path.indexOf('/service')}`)
@@ -77,6 +75,8 @@ app.use('/', function(req, res, next) {
         next()
     }
 })
+
+app.use(express.static(path.join(__dirname, 'static')));
 app.use('/service', serviceRouter);
 
 declare global {
@@ -90,6 +90,31 @@ app.use(proxy('/service', {
     changeOrigin: true,
     pathRewrite: {
         '^/service': ''
+    },
+    onProxyReq: (proxyReq, req, res) => {
+        if (req.method == "POST") {
+            let body = new Object()
+
+            for (let attr in req.body) {
+                body[attr] = req.body[attr]
+            }
+
+            body["openID"] = req.session["openid"]
+
+            // URI encode JSON object
+            let bodyContent = Object.keys( body ).map(function( key ) {
+                return encodeURIComponent( key ) + '=' + encodeURIComponent( body[ key ])
+            }).join('&');
+
+            // Update header
+            proxyReq.setHeader( 'content-type', 'application/x-www-form-urlencoded' );
+            proxyReq.setHeader( 'content-length', bodyContent.length );
+
+            // Write out body changes to the proxyReq stream
+            proxyReq.write( bodyContent );
+            proxyReq.end();
+            console.log('wtf')
+        }
     }
 }));
 

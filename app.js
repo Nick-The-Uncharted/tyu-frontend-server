@@ -51,7 +51,6 @@ app.use(function (req, res, next) {
     }
     next();
 });
-app.use(express.static(path.join(__dirname, 'static')));
 // 获取code, 拿到openid
 app.use('/', function (req, res, next) {
     console.log("path: " + req.path + " " + req.path.indexOf('/service'));
@@ -73,14 +72,36 @@ app.use('/', function (req, res, next) {
         next();
     }
 });
+app.use(express.static(path.join(__dirname, 'static')));
 app.use('/service', service_1.default);
 app.use(proxy('/service', {
     target: config.serverUrl,
     changeOrigin: true,
     pathRewrite: {
         '^/service': ''
+    },
+    onProxyReq: function (proxyReq, req, res) {
+        if (req.method == "POST") {
+            var body_1 = new Object();
+            for (var attr in req.body) {
+                body_1[attr] = req.body[attr];
+            }
+            body_1["openID"] = req.session["openid"];
+            // URI encode JSON object
+            var bodyContent = Object.keys(body_1).map(function (key) {
+                return encodeURIComponent(key) + '=' + encodeURIComponent(body_1[key]);
+            }).join('&');
+            // Update header
+            proxyReq.setHeader('content-type', 'application/x-www-form-urlencoded');
+            proxyReq.setHeader('content-length', bodyContent.length);
+            // Write out body changes to the proxyReq stream
+            proxyReq.write(bodyContent);
+            proxyReq.end();
+            console.log('wtf');
+        }
     }
 }));
+// history中间件会把所有get请求rewrite来支持单页应用， 放在这防止rewrite json接口
 app.use(history());
 app.use(express.static(path.join(__dirname, 'node_modules/tyu-wechat/dist')));
 // catch 404 and forward to error handler

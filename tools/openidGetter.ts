@@ -7,7 +7,7 @@ function fullUrl(req) {
   return url.format({
     protocol: req.protocol,
     hostname: req.hostname,
-    // port: req.socket.localPort,
+    port: req.socket.localPort,
     pathname: req.originalUrl
   });
 }
