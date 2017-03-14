@@ -1,11 +1,11 @@
 {
-  "activity/bundle.js": "activity/bundle-ee4ba68774.js",
+  "activity/bundle.js": "activity/bundle-04e38b3b8a.js",
   "activity/resource/bundle.css": "activity/resource/bundle-15222daae7.css",
-  "register/bundle.js": "register/bundle-f69ce4052b.js",
-  "register/resource/bundle.css": "register/resource/bundle-ab5afefcae.css",
-  "report/bundle.js": "report/bundle-ac9701e94d.js",
-  "report/resource/bundle.css": "report/resource/bundle-3253000eb4.css",
-  "user/bundle.js": "user/bundle-5a28633bf0.js",
-  "user/resource/bundle.css": "user/resource/bundle-7a2f85d2f5.css",
-  "vendor.js": "vendor-7f71fb1d2d.js"
+  "register/bundle.js": "register/bundle-4e540a8095.js",
+  "register/resource/bundle.css": "register/resource/bundle-4a333fcbe9.css",
+  "report/bundle.js": "report/bundle-a8a7a319b0.js",
+  "report/resource/bundle.css": "report/resource/bundle-ab5975c5ed.css",
+  "user/bundle.js": "user/bundle-b2a8d18eef.js",
+  "user/resource/bundle.css": "user/resource/bundle-ed8adf0308.css",
+  "vendor.js": "vendor-51c88bbe58.js"
 }
