@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
 var log = require("../tools/loggers");
 var config = require('../config.json')["wechat"];
@@ -8,7 +7,7 @@ function fullUrl(req) {
     return url.format({
         protocol: req.protocol,
         hostname: req.hostname,
-        port: req.socket.localPort,
+        // port: req.socket.localPort,
         pathname: req.originalUrl
     });
 }
@@ -27,6 +26,7 @@ function getOpenidFromAuthCode(req, res, next, authCode) {
         }
     });
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = getOpenidFromAuthCode;
 function redirectToGetOpenId(req, res, next) {
     log.info("redirect => " + getWechatRedirectUrl(fullUrl(req)));

@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var mysql = require("mysql");
 var mysqlConfig = require('../config.json').mysql;
 var logger = require("../tools/loggers");
