@@ -22,7 +22,7 @@ const verifyPhoneNumber: RequestHandler = async function (req, res, next) {
             res.status(401).json({
                 message: '验证码错误'
             })
-        }     
+        }
     } catch (error) {
         if (error) {
             res.status(412).json({
@@ -91,7 +91,7 @@ const getBindedChildren: RequestHandler = function(req, res, next) {
 }
 
 router.post('/reportUser/bindPhoneNumber', verifyPhoneNumber, bindPhoneNumber)
-router.post('/reportUser/bindStudent', bindChild)
-router.get('/reportUser/searchStudentByOpenID', getBindedChildren)
+//router.post('/reportUser/bindStudent', bindChild)
+//router.get('/reportUser/searchStudentByOpenID', getBindedChildren)
 
 export default router
