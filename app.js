@@ -81,8 +81,7 @@ app.use(proxy('/service', {
         if (path.indexOf('/service') == 0) {
             console.log('path is ' + path);
             if (path.indexOf('?') >= 0) {
-                console.log('rewrite to' + (path + "&openID=" + req.session["openid"]));
-                return path + "&openID=" + req.session["openid"];
+                return path.replace('/service', '') + "&openID=" + req.session["openid"];
             }
             else {
                 console.log('rewrite to' + (path.substr(8) + "?openID=" + req.session["openid"]));
