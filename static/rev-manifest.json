@@ -1,0 +1,15 @@
+{
+  "activity/bundle.js": "activity/bundle-e2ad4e5016.js",
+  "activity/resource/bundle.css": "activity/resource/bundle-c6415a12db.css",
+  "list/bundle.js": "list/bundle-a4bf48d973.js",
+  "list/resource/bundle.css": "list/resource/bundle-afcfd08adc.css",
+  "modify/bundle.js": "modify/bundle-e33fd53cde.js",
+  "modify/resource/bundle.css": "modify/resource/bundle-c489883b3a.css",
+  "register/bundle.js": "register/bundle-5fee706082.js",
+  "register/resource/bundle.css": "register/resource/bundle-c4180ab8e4.css",
+  "report/bundle.js": "report/bundle-41689ba3fa.js",
+  "report/resource/bundle.css": "report/resource/bundle-4018947eab.css",
+  "user/bundle.js": "user/bundle-35789b0b15.js",
+  "user/resource/bundle.css": "user/resource/bundle-471c0724f9.css",
+  "vendor.js": "vendor-da89ca84a8.js"
+}
